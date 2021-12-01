@@ -1,0 +1,1 @@
+[.[:-1],.[1:]] | transpose | map((.[1]-.[0]) | select(.>0)) | length
