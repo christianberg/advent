@@ -2,17 +2,13 @@
 split("\n") | .[:-1] |
 map(
   split(" ") |
-  .[1] |= tonumber |
-  if .[0]=="forward" then
-    [0,.[1]]
-  elif .[0]=="down" then
-    [.[1],0]
-  else
-    [-1*.[1],0]
-  end
+  {(.[0]): (.[1]|tonumber)} |
+  {forward, down, up}
 ) |
 reduce .[] as $step (
-  [0,0,0];
-  [.[0]+$step[0],.[1]+.[0]*$step[1],.[2]+$step[1]]
+  {aim: 0, pos: 0, depth: 0};
+  .aim += ($step.down//0) - ($step.up//0) |
+  .pos += $step.forward//0 |
+  .depth += (($step.forward//0) * .aim)
 ) |
-.[1]*.[2]
+.pos * .depth
