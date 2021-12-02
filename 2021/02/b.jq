@@ -3,12 +3,13 @@ split("\n") | .[:-1] |
 map(
   split(" ") |
   {(.[0]): (.[1]|tonumber)} |
-  {forward, down, up}
+  {forward, down, up} |
+  map_values(.//0)
 ) |
 reduce .[] as $step (
   {aim: 0, pos: 0, depth: 0};
-  .aim += ($step.down//0) - ($step.up//0) |
-  .pos += $step.forward//0 |
-  .depth += (($step.forward//0) * .aim)
+  .aim += $step.down - $step.up |
+  .pos += $step.forward |
+  .depth += $step.forward * .aim
 ) |
 .pos * .depth
