@@ -1,5 +1,5 @@
 #!/usr/bin/env jq --slurp --raw-input -f
-def more($l; $i):
+def find($l; $i; maybe_not):
   if $l==1 then
     .[0]
   else
@@ -9,32 +9,12 @@ def more($l; $i):
       $input[.][$i]==1;
       .+=1
     ) |
-    if . > ($l-.) then
+    if (. > ($l-.)) | maybe_not then
       . as $cut |
-      $input[:$cut] | more($cut; $i+1)
+      $input[:$cut] | find($cut; $i+1; maybe_not)
     else
       . as $cut |
-      $input[$cut:] | more($l-$cut; $i+1)
-    end
-  end
-;
-
-def less($l; $i):
-  if $l==1 then
-    .[0]
-  else
-    . as $input |
-    0 |
-    until(
-      $input[.][$i]==1;
-      .+=1
-    ) |
-    if . <= ($l-.) then
-      . as $cut |
-      $input[:$cut] | less($cut; $i+1)
-    else
-      . as $cut |
-      $input[$cut:] | less($l-$cut; $i+1)
+      $input[$cut:] | find($l-$cut; $i+1; maybe_not)
     end
   end
 ;
@@ -52,6 +32,6 @@ def decimal:
 split("\n") | .[:-1] |
 sort | length as $l |
 map(split("") |map(tonumber)) |
-[more($l; 0), less($l; 0)] |
+[find($l; 0; .), find($l; 0; not)] |
 map(decimal) |
 .[0]*.[1]
