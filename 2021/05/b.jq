@@ -1,10 +1,12 @@
 #!/usr/bin/env jq --slurp --raw-input -f
 def get_range($dir):
-  if .[0][$dir]<=.[1][$dir] then
-    [range(.[0][$dir];.[1][$dir]+1)]
+  (if .[0][$dir] <= .[1][$dir] then
+    1
   else
-    [range(.[0][$dir];.[1][$dir]-1;-1)]
-  end;
+    -1
+  end) as $step |
+  [range(.[0][$dir]; .[1][$dir]+$step; $step)]
+;
 
 
 split("\n") | .[:-1] |
