@@ -1,19 +1,13 @@
 #!/usr/bin/env jq --slurp --raw-input -f
-def get_range($dir):
-  (if .[0][$dir] <= .[1][$dir] then
-    1
-  else
-    -1
-  end) as $step |
-  [range(.[0][$dir]; .[1][$dir]+$step; $step)]
-;
-
-
 split("\n") | .[:-1] |
 map(
   split(" -> ") |
   map(split(",") | map(tonumber)) |
-  [get_range(0), get_range(1)] |
+  transpose |
+  map(
+    (if .[0] <= .[1] then 1 else -1 end) as $step |
+    [range(.[0]; .[1]+$step; $step)]
+  ) |
   if (map(length) | min) == 1 then
     combinations
   else
