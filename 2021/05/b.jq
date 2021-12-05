@@ -14,7 +14,7 @@ map(
   split(" -> ") |
   map(split(",") | map(tonumber)) |
   [get_range(0), get_range(1)] |
-  if ((.[0] | length)==1 or (.[1] | length)==1) then
+  if (map(length) | min) == 1 then
     combinations
   else
     transpose | .[]
