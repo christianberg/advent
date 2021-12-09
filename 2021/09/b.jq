@@ -1,8 +1,8 @@
 #!/usr/bin/env jq --slurp --raw-input -f
 def neighbors($height;$width):
   [
-    if (.[0]>0) then ([.[0]-1,.[1]]) else empty end,
-    if (.[0]<($height-1)) then [.[0]+1,.[1]] else empty end,
+    if .[0]>0 then [.[0]-1,.[1]] else empty end,
+    if .[0]<($height-1) then [.[0]+1,.[1]] else empty end,
     if .[1]>0 then [.[0],.[1]-1] else empty end,
     if .[1]<($width-1) then [.[0],.[1]+1] else empty end
   ]
@@ -10,8 +10,10 @@ def neighbors($height;$width):
 
 def expand_basin($input;$height;$width):
   . as $core |
-  ((map(neighbors($height;$width)) | flatten(1) | unique) - $core |
-  map(select($input[.[0]][.[1]]<9))) |
+  (
+    (map(neighbors($height;$width)) | flatten(1) | unique) - $core |
+    map(select($input[.[0]][.[1]]<9))
+  ) |
   if length>0 then
     ($core + .) | expand_basin($input;$height;$width)
   else

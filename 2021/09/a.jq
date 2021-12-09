@@ -1,8 +1,8 @@
 #!/usr/bin/env jq --slurp --raw-input -f
 def neighbors($height;$width):
   [
-    if (.[0]>0) then ([.[0]-1,.[1]]) else empty end,
-    if (.[0]<($height-1)) then [.[0]+1,.[1]] else empty end,
+    if .[0]>0 then [.[0]-1,.[1]] else empty end,
+    if .[0]<($height-1) then [.[0]+1,.[1]] else empty end,
     if .[1]>0 then [.[0],.[1]-1] else empty end,
     if .[1]<($width-1) then [.[0],.[1]+1] else empty end
   ]
